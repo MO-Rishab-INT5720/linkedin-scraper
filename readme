@@ -1,0 +1,11 @@
+LinkedIn Profile Finder — Approach & Rationale
+This tool finds LinkedIn profile URLs for a client database using automated browser-based search, and is designed specifically to handle real-world data quality issues.
+The dataset contains several common problems
+1. client names that are incomplete or use only initials, 
+2. company names entered in place of person names
+3. entries mixed with PAN numbers, HUFs, trusts, deceased individuals
+4. junk values like "Housewife" or "Removed from SOW list." 
+The script automatically detects and skips non-searchable entries, strips embedded PAN numbers and bracket noise from names, and filters out meaningless company values before constructing any search query.
+Rather than relying on a third-party enrichment API (which either returns placeholder data or requires expensive per-lookup pricing), the script searches LinkedIn's own people search directly. This makes the results accurate and cost effective. The search strategy is also tiered by client value: Diamond and Emerald clients are searched using name plus company name for higher precision, while Gold clients are searched by name alone since company data is sparse for that segment.
+For URL extraction, the script avoids brittle CSS card selectors that break every time LinkedIn updates its frontend. Instead it pulls every linkedin.com/in/ link present on the results page, which is structurally stable and resilient to LinkedIn's frequent DOM changes. The top 3 results are returned per client, giving a reviewer enough candidates to identify the correct profile even when the name is common or ambiguous.
+Results are written to CSV immediately after each row is processed, so no data is lost if the script is interrupted, and any run can be resumed exactly where it left off.
